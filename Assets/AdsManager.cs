@@ -14,7 +14,7 @@ public class AdsManager : MonoBehaviour
 
 
 
-    private const string MaxSdkKey = "Fm-Zo4_Ie4a9JOZJ7gr_D7Td1_hNGNdW8c4wg3DJ8pTRC1mJhaJwisXksD57bkdkKhe0msKufoKsp49VfSPMJy";//Sablo
+    private const string MaxSdkKey = "DPoLI79N0o5DhmIqfeB0NdAIxMhizWM1zIsX1Q1V0XleTr71V99C38CIM1XZMiP5O_Zlc3ssc7brDhOeiIGpsl";//Sablo
     
     [SerializeField] private string InterstitialAdUnitIdGeneric = "a6f12d14cd87b060";
     [SerializeField] private string RewardedAdUnitIdGeneric = "e909c09de7b0b067";
@@ -44,11 +44,12 @@ public class AdsManager : MonoBehaviour
      InterstitialAdUnitIdGeneric = "2886cded5b554789";
      RewardedAdUnitIdGeneric = "df02540ef52c1a2c";
 #endif
-// #if UNITY_IOS
-//         AppTrackingTransparency.RegisterAppForAdNetworkAttribution();
-// #endif
-        
-        
+        // #if UNITY_IOS
+        //         AppTrackingTransparency.RegisterAppForAdNetworkAttribution();
+        // #endif
+
+        MaxSdk.ShowMediationDebugger();
+
     }
 
     private MaxSdkBase.SdkConfiguration _sdkConfiguration;
@@ -168,7 +169,7 @@ public class AdsManager : MonoBehaviour
         
 
         Debug.Log("StatLoading");
-        SceneManager.LoadScene("Scenes/singletonScene");
+        //SceneManager.LoadScene("Scenes/singletonScene");
         
     }
 #if UNITY_IOS

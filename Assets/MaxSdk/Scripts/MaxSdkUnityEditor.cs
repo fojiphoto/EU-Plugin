@@ -42,9 +42,11 @@ public class MaxSdkUnityEditor : MaxSdkBase
         get { return MaxUserServiceUnityEditor.Instance; }
     }
 
-    static MaxSdkUnityEditor()
+    [RuntimeInitializeOnLoadMethod]
+    public static void InitializeMaxSdkUnityEditorOnLoad()
     {
-        InitCallbacks();
+        // Unity destroys the stub banners each time the editor exits play mode, but the StubBanners stays in memory if Enter Play Mode settings is enabled.
+        StubBanners.Clear();
     }
 
     /// <summary>
@@ -167,6 +169,24 @@ public class MaxSdkUnityEditor : MaxSdkBase
     }
 
     /// <summary>
+    /// Present the mediation debugger UI.
+    ///
+    /// Please call this method after the SDK has initialized.
+    /// </summary>
+    public static void ShowCreativeDebugger()
+    {
+        if (!_isInitialized)
+        {
+            MaxSdkLogger.UserWarning("The creative debugger cannot be shown before the MAX SDK has been initialized."
+                                     + "\nCall 'MaxSdk.InitializeSdk();' and listen for 'MaxSdkCallbacks.OnSdkInitializedEvent' before showing the mediation debugger.");
+        }
+        else
+        {
+            MaxSdkLogger.UserWarning("The creative debugger cannot be shown in the Unity Editor. Please export the project to Android or iOS first.");
+        }
+    }
+
+    /// <summary>
     /// Returns the arbitrary ad value for a given ad unit identifier with key. Returns null if no ad is loaded.
     /// </summary>
     /// <param name="adUnitIdentifier"></param>
@@ -188,21 +208,13 @@ public class MaxSdkUnityEditor : MaxSdkBase
     /// </summary>
     public static SdkConfiguration GetSdkConfiguration()
     {
-        var sdkConfiguration = new SdkConfiguration();
-        sdkConfiguration.IsSuccessfullyInitialized = _isInitialized;
-        sdkConfiguration.ConsentDialogState = ConsentDialogState.Unknown;
-#if UNITY_EDITOR
-        sdkConfiguration.AppTrackingStatus = AppTrackingStatus.Authorized;
-#endif
-        sdkConfiguration.CountryCode = RegionInfo.CurrentRegion.TwoLetterISORegionName;
-
-        return sdkConfiguration;
+        return SdkConfiguration.CreateEmpty();
     }
 
     /// <summary>
     /// Set whether or not user has provided consent for information sharing with AppLovin and other providers.
     /// </summary>
-    /// <param name="hasUserConsent"><c>true<c> if the user has provided consent for information sharing with AppLovin. <c>false<c> by default.</param>
+    /// <param name="hasUserConsent"><c>true</c> if the user has provided consent for information sharing with AppLovin. <c>false</c> by default.</param>
     public static void SetHasUserConsent(bool hasUserConsent)
     {
         _hasUserConsent = hasUserConsent;
@@ -212,7 +224,7 @@ public class MaxSdkUnityEditor : MaxSdkBase
     /// <summary>
     /// Check if user has provided consent for information sharing with AppLovin and other providers.
     /// </summary>
-    /// <returns><c>true<c> if user has provided consent for information sharing. <c>false<c> if the user declined to share information or the consent value has not been set <see cref="IsUserConsentSet">.</returns>
+    /// <returns><c>true</c> if user has provided consent for information sharing. <c>false</c> if the user declined to share information or the consent value has not been set <see cref="IsUserConsentSet"/>.</returns>
     public static bool HasUserConsent()
     {
         return _hasUserConsent;
@@ -221,7 +233,7 @@ public class MaxSdkUnityEditor : MaxSdkBase
     /// <summary>
     /// Check if user has set consent for information sharing.
     /// </summary>
-    /// <returns><c>true<c> if user has set a value of consent for information sharing.</returns>
+    /// <returns><c>true</c> if user has set a value of consent for information sharing.</returns>
     public static bool IsUserConsentSet()
     {
         return _isUserConsentSet;
@@ -230,7 +242,7 @@ public class MaxSdkUnityEditor : MaxSdkBase
     /// <summary>
     /// Mark user as age restricted (i.e. under 16).
     /// </summary>
-    /// <param name="isAgeRestrictedUser"><c>true<c> if the user is age restricted (i.e. under 16).</param>
+    /// <param name="isAgeRestrictedUser"><c>true</c> if the user is age restricted (i.e. under 16).</param>
     public static void SetIsAgeRestrictedUser(bool isAgeRestrictedUser)
     {
         _isAgeRestrictedUser = isAgeRestrictedUser;
@@ -240,7 +252,7 @@ public class MaxSdkUnityEditor : MaxSdkBase
     /// <summary>
     /// Check if user is age restricted.
     /// </summary>
-    /// <returns><c>true<c> if the user is age-restricted. <c>false<c> if the user is not age-restricted or the age-restriction has not been set<see cref="IsAgeRestrictedUserSet">.</returns>
+    /// <returns><c>true</c> if the user is age-restricted. <c>false</c> if the user is not age-restricted or the age-restriction has not been set<see cref="IsAgeRestrictedUserSet"/>.</returns>
     public static bool IsAgeRestrictedUser()
     {
         return _isAgeRestrictedUser;
@@ -249,7 +261,7 @@ public class MaxSdkUnityEditor : MaxSdkBase
     /// <summary>
     /// Check if user set its age restricted settings.
     /// </summary>
-    /// <returns><c>true<c> if user has set its age restricted settings.</returns>
+    /// <returns><c>true</c> if user has set its age restricted settings.</returns>
     public static bool IsAgeRestrictedUserSet()
     {
         return _isAgeRestrictedUserSet;
@@ -258,7 +270,7 @@ public class MaxSdkUnityEditor : MaxSdkBase
     /// <summary>
     /// Set whether or not user has opted out of the sale of their personal information.
     /// </summary>
-    /// <param name="doNotSell"><c>true<c> if the user has opted out of the sale of their personal information.</param>
+    /// <param name="doNotSell"><c>true</c> if the user has opted out of the sale of their personal information.</param>
     public static void SetDoNotSell(bool doNotSell)
     {
         _doNotSell = doNotSell;
@@ -268,7 +280,7 @@ public class MaxSdkUnityEditor : MaxSdkBase
     /// <summary>
     /// Check if the user has opted out of the sale of their personal information.
     /// </summary>
-    /// <returns><c>true<c> if the user has opted out of the sale of their personal information. <c>false<c> if the user opted in to the sell of their personal information or the value has not been set <see cref="IsDoNotSellSet">.</returns>
+    /// <returns><c>true</c> if the user has opted out of the sale of their personal information. <c>false</c> if the user opted in to the sell of their personal information or the value has not been set <see cref="IsDoNotSellSet"/>.</returns>
     public static bool IsDoNotSell()
     {
         return _doNotSell;
@@ -277,7 +289,7 @@ public class MaxSdkUnityEditor : MaxSdkBase
     /// <summary>
     /// Check if the user has set the option to sell their personal information.
     /// </summary>
-    /// <returns><c>true<c> if user has chosen an option to sell their personal information.</returns>
+    /// <returns><c>true</c> if user has chosen an option to sell their personal information.</returns>
     public static bool IsDoNotSellSet()
     {
         return _isDoNotSellSet;
@@ -336,6 +348,23 @@ public class MaxSdkUnityEditor : MaxSdkBase
 
         StubBanners.Add(adUnitIdentifier, stubBanner);
 #endif
+    }
+
+    /// <summary>
+    /// Load a new banner ad.
+    /// NOTE: The <see cref="CreateBanner()"/> method loads the first banner ad and initiates an automated banner refresh process.
+    /// You only need to call this method if you pause banner refresh. 
+    /// </summary>
+    /// <param name="adUnitIdentifier">Ad unit identifier of the banner to load</param>
+    public static void LoadBanner(string adUnitIdentifier)
+    {
+        ValidateAdUnitIdentifier(adUnitIdentifier, "load banner");
+
+        ExecuteWithDelay(1f, () =>
+        {
+            var eventProps = Json.Serialize(CreateBaseEventPropsDictionary("OnBannerAdLoadedEvent", adUnitIdentifier));
+            MaxSdkCallbacks.Instance.ForwardEvent(eventProps);
+        });
     }
 
     /// <summary>
@@ -544,6 +573,23 @@ public class MaxSdkUnityEditor : MaxSdkBase
     {
         ValidateAdUnitIdentifier(adUnitIdentifier, "create MREC");
         RequestAdUnit(adUnitIdentifier);
+    }
+
+    /// <summary>
+    /// Load a new MREC ad.
+    /// NOTE: The <see cref="CreateMRec()"/> method loads the first MREC ad and initiates an automated MREC refresh process.
+    /// You only need to call this method if you pause MREC refresh. 
+    /// </summary>
+    /// <param name="adUnitIdentifier">Ad unit identifier of the MREC to load</param>
+    public static void LoadMRec(string adUnitIdentifier)
+    {
+        ValidateAdUnitIdentifier(adUnitIdentifier, "load MREC");
+
+        ExecuteWithDelay(1f, () =>
+        {
+            var eventProps = Json.Serialize(CreateBaseEventPropsDictionary("OnMRecAdLoadedEvent", adUnitIdentifier));
+            MaxSdkCallbacks.Instance.ForwardEvent(eventProps);
+        });
     }
 
     /// <summary>
@@ -882,6 +928,123 @@ public class MaxSdkUnityEditor : MaxSdkBase
     public static void SetInterstitialLocalExtraParameter(string adUnitIdentifier, string key, object value)
     {
         ValidateAdUnitIdentifier(adUnitIdentifier, "set interstitial local extra parameter");
+    }
+
+    #endregion
+
+    #region App Open Ads
+
+    /// <summary>
+    /// Start loading an app open ad.
+    /// </summary>
+    /// <param name="adUnitIdentifier">Ad unit identifier of the app open ad to load</param>
+    public static void LoadAppOpenAd(string adUnitIdentifier)
+    {
+        ValidateAdUnitIdentifier(adUnitIdentifier, "load app open ad");
+        RequestAdUnit(adUnitIdentifier);
+
+        ExecuteWithDelay(1f, () =>
+        {
+            AddReadyAdUnit(adUnitIdentifier);
+
+            var eventProps = Json.Serialize(CreateBaseEventPropsDictionary("OnAppOpenAdLoadedEvent", adUnitIdentifier));
+            MaxSdkCallbacks.Instance.ForwardEvent(eventProps);
+        });
+    }
+
+    /// <summary>
+    /// Check if app open ad ad is loaded and ready to be displayed.
+    /// </summary>
+    /// <param name="adUnitIdentifier">Ad unit identifier of the app open ad to load</param>
+    /// <returns>True if the ad is ready to be displayed</returns>
+    public static bool IsAppOpenAdReady(string adUnitIdentifier)
+    {
+        ValidateAdUnitIdentifier(adUnitIdentifier, "check app open ad loaded");
+
+        if (!IsAdUnitRequested(adUnitIdentifier))
+        {
+            MaxSdkLogger.UserWarning("App Open Ad '" + adUnitIdentifier +
+                                     "' was not requested, can not check if it is loaded");
+            return false;
+        }
+
+        return IsAdUnitReady(adUnitIdentifier);
+    }
+
+    /// <summary>
+    /// Present loaded app open ad for a given placement to tie ad events to. Note: if the app open ad is not ready to be displayed nothing will happen.
+    /// </summary>
+    /// <param name="adUnitIdentifier">Ad unit identifier of the app open ad to load</param>
+    /// <param name="placement">The placement to tie the showing ad's events to</param>
+    /// <param name="customData">The custom data to tie the showing ad's events to. Maximum size is 8KB.</param>
+    public static void ShowAppOpenAd(string adUnitIdentifier, string placement = null, string customData = null)
+    {
+        ValidateAdUnitIdentifier(adUnitIdentifier, "show app open ad");
+
+        if (!IsAdUnitRequested(adUnitIdentifier))
+        {
+            MaxSdkLogger.UserWarning(
+                "App Open Ad '" + adUnitIdentifier + "' was not requested, can not show it");
+            return;
+        }
+
+        if (!IsAppOpenAdReady(adUnitIdentifier))
+        {
+            MaxSdkLogger.UserWarning("App Open Ad '" + adUnitIdentifier + "' is not ready, please check IsAppOpenAdReady() before showing.");
+            return;
+        }
+
+        RemoveReadyAdUnit(adUnitIdentifier);
+
+        if (_showStubAds)
+        {
+            ShowStubAppOpenAd(adUnitIdentifier);
+        }
+    }
+
+    private static void ShowStubAppOpenAd(string adUnitIdentifier)
+    {
+#if UNITY_EDITOR
+        var prefabPath = MaxSdkUtils.GetAssetPathForExportPath("MaxSdk/Prefabs/Interstitial.prefab");
+        var appOpenAdPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        var stubAppOpenAd = Object.Instantiate(appOpenAdPrefab, Vector3.zero, Quaternion.identity);
+        var appOpenAdText = GameObject.Find("MaxInterstitialTitle").GetComponent<Text>();
+        var closeButton = GameObject.Find("MaxInterstitialCloseButton").GetComponent<Button>();
+        Object.DontDestroyOnLoad(stubAppOpenAd);
+
+        appOpenAdText.text = "MAX App Open Ad:\n" + adUnitIdentifier;
+        closeButton.onClick.AddListener(() =>
+        {
+            var adHiddenEventProps = Json.Serialize(CreateBaseEventPropsDictionary("OnAppOpenAdHiddenEvent", adUnitIdentifier));
+            MaxSdkCallbacks.Instance.ForwardEvent(adHiddenEventProps);
+            Object.Destroy(stubAppOpenAd);
+        });
+
+        var adDisplayedEventProps = Json.Serialize(CreateBaseEventPropsDictionary("OnAppOpenAdDisplayedEvent", adUnitIdentifier));
+        MaxSdkCallbacks.Instance.ForwardEvent(adDisplayedEventProps);
+#endif
+    }
+
+    /// <summary>
+    /// Set an extra parameter for the ad.
+    /// </summary>
+    /// <param name="adUnitIdentifier">Ad unit identifier of the app open ad to set the extra parameter for.</param>
+    /// <param name="key">The key for the extra parameter.</param>
+    /// <param name="value">The value for the extra parameter.</param>
+    public static void SetAppOpenAdExtraParameter(string adUnitIdentifier, string key, string value)
+    {
+        ValidateAdUnitIdentifier(adUnitIdentifier, "set app open ad extra parameter");
+    }
+
+    /// <summary>
+    /// Set a local extra parameter for the ad.
+    /// </summary>
+    /// <param name="adUnitIdentifier">Ad unit identifier of the app open ad to set the local extra parameter for.</param>
+    /// <param name="key">The key for the local extra parameter.</param>
+    /// <param name="value">The value for the local extra parameter.</param>
+    public static void SetAppOpenAdLocalExtraParameter(string adUnitIdentifier, string key, object value)
+    {
+        ValidateAdUnitIdentifier(adUnitIdentifier, "set app open ad local extra parameter");
     }
 
     #endregion

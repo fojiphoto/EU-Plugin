@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "266586496991",
+    "project_id": "fs-us-76dba",
+    "storage_bucket": "fs-us-76dba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:266586496991:android:6cec3c962ff5dbdb7e2e6a",
+        "android_client_info": {
+          "package_name": "com.fs.survival.runner.games"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "266586496991-npklqql2i8nbj3rf9j6vjlupk29v36u5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBowfFJkMjB4PHIbYIn9jiqzqNU7mPWwH4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "266586496991-npklqql2i8nbj3rf9j6vjlupk29v36u5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:266586496991:android:debd99f6897dc0517e2e6a",
+        "android_client_info": {
+          "package_name": "com.traffic.games.car.games.car.parking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "266586496991-npklqql2i8nbj3rf9j6vjlupk29v36u5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBowfFJkMjB4PHIbYIn9jiqzqNU7mPWwH4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "266586496991-npklqql2i8nbj3rf9j6vjlupk29v36u5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

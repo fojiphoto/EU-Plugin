@@ -309,6 +309,27 @@ public class MaxSdkUtils
 
 #if UNITY_IOS
     [DllImport("__Internal")]
+    private static extern bool _MaxIsPhysicalDevice();
+#endif
+
+    /// <summary>
+    /// Returns whether or not a physical device is being used, as opposed to an emulator / simulator.
+    /// </summary>
+    public static bool IsPhysicalDevice()
+    {
+#if UNITY_EDITOR
+        return false;
+#elif UNITY_IOS
+        return _MaxIsPhysicalDevice();
+#elif UNITY_ANDROID
+        return MaxUnityPluginClass.CallStatic<bool>("isPhysicalDevice");
+#else
+        return false;
+#endif
+    }
+
+#if UNITY_IOS
+    [DllImport("__Internal")]
     private static extern float _MaxScreenDensity();
 #endif
 
@@ -475,6 +496,16 @@ public class MaxSdkUtils
         return VersionComparisonResult.Equal;
     }
 
+    /// <summary>
+    /// Check if the given string is valid - not <c>null</c> and not empty.
+    /// </summary>
+    /// <param name="toCheck">The string to be checked.</param>
+    /// <returns><c>true</c> if the given string is not <c>null</c> and not empty.</returns>
+    public static bool IsValidString(string toCheck)
+    {
+        return !string.IsNullOrEmpty(toCheck);
+    }
+
 #if UNITY_EDITOR
     /// <summary>
     /// Gets the path of the asset in the project for a given MAX plugin export path.
@@ -484,7 +515,8 @@ public class MaxSdkUtils
     public static string GetAssetPathForExportPath(string exportPath)
     {
         var defaultPath = Path.Combine("Assets", exportPath);
-        var assetGuids = AssetDatabase.FindAssets("l:al_max_export_path-" + exportPath);
+        var assetLabelToFind = "l:al_max_export_path-" + exportPath.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var assetGuids = AssetDatabase.FindAssets(assetLabelToFind);
 
         return assetGuids.Length < 1 ? defaultPath : AssetDatabase.GUIDToAssetPath(assetGuids[0]);
     }
